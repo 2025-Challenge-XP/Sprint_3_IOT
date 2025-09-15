@@ -1,5 +1,12 @@
 # Face-ID App
 
+## Integrantes
+- André Lambert – RM 99148 
+- Felipe Cortez - RM 99750 
+- Julia Lins - RM 98690 
+- Luis Barreto - RM 99210 
+- Victor Aranda - RM 99667
+
 ## Objetivo
 Este projeto é uma aplicação local para reconhecimento e identificação facial de usuários utilizando OpenCV, MediaPipe e Haar Cascade. O sistema permite cadastrar rostos e realizar reconhecimento em tempo real, demonstrando parâmetros ajustáveis e exibindo os resultados na tela.
 
@@ -84,8 +91,12 @@ face-id-app/
 ```
 
 ## Dependências
+### (Indicado utilizar versão 3.10.11 do Python)
 - opencv-python
 - mediapipe
 - numpy
 
+
+
 (Instale todas via `pip install -r requirements.txt`)
+

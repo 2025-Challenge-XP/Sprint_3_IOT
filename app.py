@@ -8,7 +8,7 @@ import mediapipe as mp
 PARAMS = {
     "DATABASE": "faces_database.pkl",         # Caminho do arquivo onde os rostos cadastrados são salvos
     "FACE_SIZE": (200, 200),                  # Tamanho padrão para redimensionar imagens de rosto
-    "SAMPLES_PER_PERSON": 30,                 # Quantidade de amostras coletadas por pessoa no cadastro
+    "SAMPLES_PER_PERSON": 150,                 # Quantidade de amostras coletadas por pessoa no cadastro
     "HAAR_SCALE_FACTOR": 1.1,                 # Fator de escala para detecção de faces (Haar Cascade)
     "HAAR_MIN_NEIGHBORS": 7,                  # Número mínimo de vizinhos para considerar uma detecção válida (Haar Cascade)
     "HAAR_MIN_SIZE": (80, 80),                # Tamanho mínimo da face detectada (Haar Cascade)
@@ -193,11 +193,23 @@ def reconhecer_rosto(camera_index):
         for (x, y, w, h) in faces_detected:
             rosto_atual = gray[y:y+h, x:x+w]
             rosto_atual = cv2.resize(rosto_atual, PARAMS["FACE_SIZE"])
+
+            # Pré-processamento
+            rosto_atual = cv2.equalizeHist(rosto_atual)  # Equalização de histograma
+            rosto_atual = cv2.GaussianBlur(rosto_atual, (3, 3), 0)  # Suavização
+
+            # Normalização (opcional)
+            rosto_atual = cv2.normalize(rosto_atual, None, 0, 255, cv2.NORM_MINMAX)
+
             label_pred, confidence = recognizer.predict(rosto_atual)
-            if confidence < 70:
+            # Aumentando o threshold para tornar o reconhecimento mais rigoroso
+            if confidence < 60:
                 name = [k for k, v in label_map.items() if v == label_pred][0]
-            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-            cv2.putText(frame, f"{name} ({confidence:.0f})", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                cv2.putText(frame, f"{name} ({confidence:.0f})", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+            else:
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+                cv2.putText(frame, "Desconhecido", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
 
         cv2.imshow(window_name, frame)
 
